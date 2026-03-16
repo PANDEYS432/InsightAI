@@ -1,6 +1,6 @@
 #  AI Conversation Assistant + Accident Data Agent
 
-An AI-powered web app with two features — chat with your documents using RAG, and analyse India road accident data through a conversational agent.
+An AI-powered web app with two features: chat with your documents using RAG, and analyse India road accident data through a conversational agent.
 
 ## Tech Stack
 
