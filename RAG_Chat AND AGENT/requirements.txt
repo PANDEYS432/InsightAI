@@ -1,0 +1,42 @@
+# ── Web Framework ─────────────────────────────────────────────────────────────
+Flask
+Flask-CORS
+Werkzeug
+gunicorn
+
+# ── AI Model APIs ─────────────────────────────────────────────────────────────
+openai
+anthropic
+google-genai
+googleapis-common-protos
+sarvamai
+requests
+httpx
+
+# ── Vector Store ──────────────────────────────────────────────────────────────
+chromadb
+sentence-transformers
+
+# ── Web Scraping ──────────────────────────────────────────────────────────────
+beautifulsoup4
+lxml
+
+# ── Document Processing ───────────────────────────────────────────────────────
+PyPDF2
+pdfplumber
+PyMuPDF
+unicodedata2
+tiktoken
+
+# ── Environment ───────────────────────────────────────────────────────────────
+python-dotenv
+
+# ── LangChain ─────────────────────────────────────────────────────────────────
+langchain_experimental
+langchain_community
+langchain_text_splitters
+
+# ── Accident Data API + Agent ─────────────────────────────────────────────────
+fastapi
+uvicorn[standard]
+pandas

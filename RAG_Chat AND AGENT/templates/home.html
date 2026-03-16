@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="top" class="hero-container">
+    <div class="hero-content-wrapper">
+        <div class="hero-content animate-fade-in">
+            <h1>AI Conversation Assistant</h1>
+            <p class="hero-subtitle">Chat with your documents and websites using advanced AI models</p>
+            
+            <div class="hero-actions">
+                <a href="/conversation-upload" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i> Get Started
+                </a>
+                <a href="/conversation" class="btn btn-outline-primary">
+                    <i class="fas fa-comments"></i> Go to Conversation
+                </a>
+                <a href="/dataset" class="btn btn-outline-primary">
+                    <i class="fas fa-database"></i> Generate Dataset
+                </a>
+            </div>
+        </div>
+        <div class="hero-image animate-fade-in">
+            <img src="{{ url_for('static', filename='Images/5162744-removebg-preview.png') }}" alt="AI Conversation Assistant">
+        </div>
+    </div>
+</div>
+   
+<div id="features" class="features-section">
+    <div class="info-content">
+        <h2>Features</h2>
+        <div class="features-container">
+            <div class="features">
+                <div class="feature-card animate-fade-in" style="animation-delay: 0.1s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Document Analysis</h3>
+                    <p>Upload PDFs, text files, and other documents to chat with their contents</p>
+                </div>
+                
+                <div class="feature-card animate-fade-in" style="animation-delay: 0.2s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Web Content</h3>
+                    <p>Add web pages as sources to analyze and discuss online content</p>
+                </div>
+                
+                <div class="feature-card animate-fade-in" style="animation-delay: 0.3s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Multiple AI Models</h3>
+                    <p>Choose from various AI models including Sarvam, GPT, Claude, Gemini, and local models</p>
+                </div>
+                
+                <div class="feature-card animate-fade-in" style="animation-delay: 0.4s;">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>QA Dataset Generation</h3>
+                    <p>Generate question-answer datasets from your documents for training or evaluation</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="how-it-works" class="info-section">
+    <div class="info-content">
+        <h2>How It Works</h2>
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab active" data-tab="conversation">Conversation Mode</button>
+                <button class="tab" data-tab="dataset">Dataset Generation</button>
+            </div>
+            
+            <div class="tab-content" id="conversation-tab">
+                <div class="steps-container">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Upload Sources</h3>
+                            <p>Add documents, web pages, or text snippets as conversation sources</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Select AI Model</h3>
+                            <p>Choose your preferred AI assistant model for the conversation</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Start Chatting</h3>
+                            <p>Ask questions and get answers based on your uploaded sources</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content hidden" id="dataset-tab">
+                <div class="steps-container">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Upload Sources</h3>
+                            <p>Add documents or web pages to generate questions and answers from</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Configure Settings</h3>
+                            <p>Set the custom query(optional), number of QA pairs, difficulty level, and output format</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Generate Dataset</h3>
+                            <p>Create and export a structured QA dataset for training or evaluation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Accident Agent strip -->
+<div class="agent-strip">
+    <div class="agent-strip-inner">
+        <div class="agent-strip-icon">
+            <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="agent-strip-text">
+            <strong>New: Accident Data Agent</strong>
+            <span>Ask natural language questions about India road accident statistics across 50+ Million Plus cities.</span>
+        </div>
+        <a href="/agent" class="agent-strip-btn">
+            Launch Agent <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+</div>
+<!-- <div id="about" class="about-section">
+    <div class="info-content">
+        <h2>About </h2>
+       
+            
+            <div class="expertise-section">
+                <h3 class="section-title">My Expertise</h3>
+                <div class="expertise-cards">
+                    <div class="expertise-card">
+                        <h4>Data Annotation & Delivery Platform</h4>
+                        <p>AI-powered platform with human-in-the-loop expertise for precise AI training Datasets & Agentic Process Automations</p>
+                    </div>
+                    
+                    <div class="expertise-card">
+                        <h4>Business & Knowledge Process Outsourcing</h4>
+                        <p>AI & ML driven back-office support for finance, customer service, content moderation, and data management</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="compliance-section">
+                <h3 class="section-title">Compliance & Security</h3>
+                <p class="compliance-text">We ensure global data protection with industry-leading certifications:</p>
+                <div class="certification-badges">
+                    <div class="cert-badge">SOC2</div>
+                    <div class="cert-badge">HIPAA</div>
+                    <div class="cert-badge">GDPR</div>
+                    <div class="cert-badge">ISO 27001</div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+
+<div id="contact" class="contact-section">
+    <div class="info-content">
+        <h2>Get in Touch</h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <p>Have questions or need assistance? Reach out to me</p>
+                <div class="contact-cards">
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Email Me</h3>
+                        <p>srishtip432@gmail.com</p>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <h3>Call Me</h3>
+                        <div class="phone-numbers">
+                            <div class="phone-number">
+                                <span class="country">India:</span>
+                                <p>+91 xxxxxxxxxx</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="contact-card">
+                    <div class="social-icons">
+                        <a href="https://twitter.com", target="_blank" class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/srishtipandey76/", target="_blank" class="social-icon">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://botfolio123.netlify.app/", target="_blank" class="social-icon">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                    </div>
+                    <h3>Connect With Me</h3>
+                    </div>
+                </div>
+
+                <!-- <div class="social-media-container">
+                    <h3>Connect With Me</h3>
+                    <div class="social-icons">
+                        <a href="https://twitter.com", target="_blank" class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/srishtipandey76/", target="_blank" class="social-icon">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="", target="_blank" class="social-icon">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}

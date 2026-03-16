@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Generate QA Dataset{% endblock %}
+
+{% block content %}
+<div class="dataset-container">
+    <div class="dataset-header">
+        <h1>Generate QA Dataset</h1>
+        <p>Create question-answer pairs from your documents for training or evaluation purposes</p>
+    </div>
+    
+    <div class="panels-container">
+        <!-- Sources Panel -->
+        <div id="sources-panel" class="dataset-panel">
+            <h2><i class="fas fa-file-alt"></i> Sources</h2>
+            <p>Documents and web pages that will be used to generate QA pairs</p>
+            
+            <div class="sources-list-container" id="source-list">
+                <div class="sources-list-header">
+                    <div>Sources</div>
+                    <div class="sources-count"><span id="source-count">0</span> sources</div>
+                </div>
+                <div class="sources-list-body" id="selected-sources">
+                    <!-- Sources will be added here dynamically -->
+                    <div class="loading-sources">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Loading your sources...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="no-sources-message" style="display: none;" class="info-message">
+                <i class="fas fa-info-circle"></i> No sources found. Please <a href="/conversation-upload">upload sources</a> first.
+            </div>
+        </div>
+        
+        <!-- Model Selection Panel -->
+        <div class="dataset-panel">
+            <h2><i class="fas fa-robot"></i> Select AI Model</h2>
+            <p>Choose which AI model will generate your question-answer pairs</p>
+            
+            <div class="model-options">
+                <div class="model-option" data-model="ollama" data-needs-key="false">
+                    <div class="model-header">
+                        <div class="model-icon">
+                            <img src="{{ url_for('static', filename='Images/ollama.png') }}" alt="Ollama" class="model-logo">
+                        </div>
+                        <div class="model-name">Ollama</div>
+                    </div>
+                    <div class="model-description">
+                        Local open-source model
+                    </div>
+                </div>
+                <div class="model-option" data-model="sarvam" data-needs-key="true">
+                    <div class="model-header">
+                        <div class="model-icon">
+                            <img src="{{ url_for('static', filename='Images/sarvam.png') }}" alt="Sarvam" class="model-logo">
+                        </div>
+                        <div class="model-name">Sarvam</div>
+                    </div>
+                    <div class="model-description">
+                        Sarvam AI LLM
+                    </div>
+                </div>
+                <div class="model-option" data-model="gpt" data-needs-key="true">
+                    <div class="model-header">
+                        <div class="model-icon">
+                            <img src="{{ url_for('static', filename='Images/openai.png') }}" alt="OpenAI" class="model-logo">
+                        </div>
+                        <div class="model-name">GPT</div>
+                    </div>
+                    <div class="model-description">
+                        OpenAI's advanced model
+                    </div>
+                </div>
+                
+                <div class="model-option" data-model="claude" data-needs-key="true">
+                    <div class="model-header">
+                        <div class="model-icon">
+                            <img src="{{ url_for('static', filename='Images/claude.png') }}" alt="Claude" class="model-logo">
+                        </div>
+                        <div class="model-name">Claude</div>
+                    </div>
+                    <div class="model-description">
+                        Anthropic's assistant AI
+                    </div>
+                </div>
+                
+                <div class="model-option" data-model="gemini" data-needs-key="true">
+                    <div class="model-header">
+                        <div class="model-icon">
+                            <img src="{{ url_for('static', filename='Images/gemini.png') }}" alt="Gemini" class="model-logo">
+                        </div>
+                        <div class="model-name">Gemini</div>
+                    </div>
+                    <div class="model-description">
+                        Google's multimodal AI
+                    </div>
+                </div>
+            </div>
+            
+            <div id="api-key-container" class="api-key-container hidden">
+                <div class="form-group">
+                    <div class="api-key-options">
+                        <div class="form-check">
+                            <input type="radio" id="use-default-key" name="api-key-option" class="form-check-input" value="default" checked>
+                            <label for="use-default-key" class="form-check-label">Use default API key</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" id="use-custom-key" name="api-key-option" class="form-check-input" value="custom">
+                            <label for="use-custom-key" class="form-check-label">Use custom API key</label>
+                        </div>
+                    </div>
+                    <div id="api-key-notification" class="api-key-notification my-2 hidden"></div>
+                    <div id="custom-key-input" class="mt-2 hidden">
+                        <label for="api-key" class="form-label">API Key</label>
+                        <input type="password" id="api-key" class="form-control" placeholder="Enter your API key">
+                    </div>
+                    <button id="submit-api-key" class="btn btn-primary mt-2">Submit</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Configuration Panel -->
+        <div class="dataset-panel">
+            <h2><i class="fas fa-cog"></i> Configure Generation Settings</h2>
+            <p>Customize how your QA dataset will be generated</p>
+            
+            <div class="dataset-options">
+                <div class="option-group">
+                    <label class="form-label">Number of QA Pairs</label>
+                    <div class="input-group">
+                        <input type="number" id="qa-count" class="form-control" value="10" min="1" max="100">
+                    </div>
+                    <p class="small-text">How many question-answer pairs to generate per source</p>
+                </div>
+                
+                <div class="option-group">
+                    <label class="form-label">Difficulty Level</label>
+                    <div class="select-wrapper">
+                        <select id="difficulty" class="form-select">
+                            <option value="basic">Basic (Factual)</option>
+                            <option value="intermediate" selected>Intermediate (Analytical)</option>
+                            <option value="advanced">Advanced (Inferential)</option>
+                        </select>
+                    </div>
+                    <p class="small-text">Determines complexity of generated questions</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Custom Query Panel -->
+        <div class="dataset-panel">
+            <h2><i class="fas fa-question-circle"></i> Custom Queries</h2>
+            <p>Add your own specific questions to generate answers for</p>
+            
+            <div class="custom-query-container">
+                <div class="custom-query-list" id="custom-queries">
+                    <!-- Custom queries will be added here -->
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Add Custom Query</label>
+                    <div class="query-input-group">
+                        <textarea id="query-input" class="form-control" placeholder="Enter your question here..."></textarea>
+                        <button id="add-query" class="btn btn-outline-primary">
+                            <i class="fas fa-plus"></i> Add Query
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="custom-query-actions">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="include-auto-queries" checked>
+                    <label class="form-check-label" for="include-auto-queries">
+                        Include auto-generated queries
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="generate-btn-container">
+        <button id="generate-dataset" class="btn btn-primary btn-lg" disabled>
+            <i class="fas fa-database"></i>
+            Generate Dataset
+        </button>
+    </div>
+    
+    <!-- Preview Panel -->
+    <div class="dataset-panel" id="preview-panel" style="display: none;">
+        <h2><i class="fas fa-eye"></i> Dataset Preview</h2>
+        <p>Review generated question-answer pairs before exporting</p>
+        
+        <div class="dataset-preview">
+            <div class="dataset-preview-header">
+                <span><strong id="qa-count-display">0</strong> QA pairs generated</span>
+                <div class="preview-controls">
+                    <button id="refresh-preview" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-sync-alt"></i>
+                        Regenerate
+                    </button>
+                </div>
+            </div>
+            <div class="dataset-preview-body" id="qa-preview">
+                <div class="loading-indicator" style="display: none;">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Generating QA pairs...</span>
+                </div>
+                <!-- QA pairs will be added here dynamically -->
+            </div>
+        </div>
+        
+        <div class="export-options">
+            <button id="export-json" class="btn-export">
+                <i class="fas fa-file-code"></i>
+                Export JSON
+            </button>
+            <button id="export-csv" class="btn-export">
+                <i class="fas fa-file-csv"></i>
+                Export CSV
+            </button>
+            <button id="export-txt" class="btn-export">
+                <i class="fas fa-file-alt"></i>
+                Export TXT
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dataset.js') }}"></script>
+{% endblock %} 

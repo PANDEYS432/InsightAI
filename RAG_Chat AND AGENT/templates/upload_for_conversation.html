@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Add Sources{% endblock %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="upload-header">
+        <h1>Add Sources for Conversation</h1>
+        <p>Upload documents, add website URLs, or paste text to create sources for your AI conversation</p>
+    </div>
+    
+    <div class="upload-tabs">
+        <div class="upload-tab active" data-tab="file">
+            <i class="fas fa-file-upload"></i>
+            <span>Upload Files</span>
+        </div>
+        <div class="upload-tab" data-tab="link">
+                    <i class="fas fa-link"></i>
+            <span>Add URL</span>
+                </div>
+        <div class="upload-tab" data-tab="text">
+            <i class="fas fa-keyboard"></i>
+            <span>Paste Text</span>
+                </div>
+    </div>
+    
+    <div class="upload-panel" id="file-panel">
+        <div class="dropzone" id="file-drop-zone">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <h3>Upload Documents</h3>
+            <p>Drag and drop or <span class="browse-btn">browse files</span></p>
+            <p class="small-text">Supported formats: PDF, TXT, and Markdown</p>
+            <input type="file" id="file-input" multiple accept=".pdf,.txt,.md" hidden>
+            </div>
+        </div>
+        
+    <div class="upload-panel" id="link-panel" style="display: none;">
+        <div class="form-group">
+            <label class="form-label">Website URL</label>
+            <div class="url-input-group">
+                <input type="url" id="link-input" class="form-control" placeholder="Enter URL (e.g., https://example.com/article)">
+                <button id="add-link" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Add
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="upload-panel" id="text-panel" style="display: none;">
+        <div class="form-group">
+            <label class="form-label">Text Content</label>
+            <textarea id="text-input" class="form-control" placeholder="Paste or type your text here"></textarea>
+            <div class="text-actions">
+                <button id="add-text" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Add as Source
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sources-list-container" id="source-list" style="display: none;">
+        <div class="sources-list-header">
+            <div>Added Sources</div>
+            <div class="sources-count"><span id="source-count">0</span>/5 sources</div>
+        </div>
+        <div class="sources-list-body" id="selected-sources">
+            <!-- Sources will be added here dynamically -->
+        </div>
+    </div>
+    
+    <div class="proceed-btn-container">
+        <button id="process-sources" class="btn btn-primary btn-lg" disabled>
+            <i class="fas fa-cog"></i>
+            Process Sources
+        </button>
+    </div>
+
+    <div id="preview-section" class="upload-panel" style="display: none;">
+        <div class="preview-header">
+            <h3>Content Preview</h3>
+            <button id="close-preview" class="action-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+        </div>
+        <div id="extracted-content" class="preview-content"></div>
+        <div class="preview-actions">
+            <button id="generate-dataset-btn" class="btn btn-secondary">
+                <i class="fas fa-database"></i>
+                <span>Generate QA Dataset</span>
+            </button>
+            <button id="continue-btn" class="btn btn-primary">
+                <i class="fas fa-comments"></i>
+                <span>Continue to Conversation</span>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+{% endblock %}

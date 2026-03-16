@@ -1,0 +1,411 @@
+{% extends "base.html" %}
+
+{% block title %}Accident Data Agent{% endblock %}
+
+{% block head %}
+<style>
+  /* ── Layout ─────────────────────────────────────────────── */
+  .agent-container {
+    display: flex;
+    height: calc(100vh - 64px);   /* full height minus navbar */
+    gap: 0;
+  }
+
+  /* ── Sidebar ────────────────────────────────────────────── */
+  .agent-sidebar {
+    width: 280px;
+    min-width: 220px;
+    background: var(--sidebar-bg, #f8f9fa);
+    border-right: 1px solid var(--border-color, #e0e0e0);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 16px;
+    gap: 20px;
+    overflow-y: auto;
+  }
+
+  .sidebar-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-muted, #888);
+    margin: 0 0 8px;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .status-badge.ok      { background: #d4edda; color: #155724; }
+  .status-badge.error   { background: #f8d7da; color: #721c24; }
+  .status-badge.loading { background: #e2e3e5; color: #555;    }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .dataset-chip {
+    display: inline-block;
+    font-size: 11px;
+    background: #e8f0fe;
+    color: #1a73e8;
+    border-radius: 4px;
+    padding: 2px 7px;
+    margin: 2px 2px 2px 0;
+  }
+
+  .suggestion-btn {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--text-color, #333);
+    cursor: pointer;
+    transition: background .15s;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .suggestion-btn:hover {
+    background: var(--hover-bg, #f0f4ff);
+    border-color: #1a73e8;
+    color: #1a73e8;
+  }
+
+  /* ── Chat main ──────────────────────────────────────────── */
+  .agent-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .agent-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .agent-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  #agent-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .msg {
+    max-width: 78%;
+    padding: 11px 15px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .msg.user {
+    align-self: flex-end;
+    background: #1a73e8;
+    color: #fff;
+    border-radius: 12px 12px 3px 12px;
+  }
+
+  .msg.assistant {
+    align-self: flex-start;
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 12px 12px 12px 3px;
+  }
+
+  .msg.thinking {
+    align-self: flex-start;
+    color: var(--text-muted, #888);
+    font-style: italic;
+    background: transparent;
+    border: none;
+    padding: 4px 0;
+    font-size: 13px;
+  }
+
+  /* ── Input row ──────────────────────────────────────────── */
+  .agent-input-row {
+    display: flex;
+    gap: 8px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    background: var(--card-bg, #fff);
+  }
+
+  #agent-input {
+    flex: 1;
+    resize: none;
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    height: 44px;
+    max-height: 120px;
+    transition: border-color .2s;
+  }
+  #agent-input:focus { border-color: #1a73e8; }
+
+  .agent-input-row .btn { height: 44px; }
+
+  #agent-send-btn {
+    background: #1a73e8;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0 22px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  #agent-send-btn:hover    { background: #1557b0; }
+  #agent-send-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  #agent-reset-btn {
+    background: none;
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 8px;
+    padding: 0 14px;
+    font-size: 13px;
+    color: var(--text-muted, #666);
+    cursor: pointer;
+  }
+  #agent-reset-btn:hover { background: #f5f5f5; }
+
+  /* ── Dark-mode overrides (respects your existing theme toggle) ── */
+  [data-theme="dark"] .agent-sidebar  { background: #1e1e2e; border-color: #333; }
+  [data-theme="dark"] .msg.assistant  { background: #2a2a3e; border-color: #444; color: #ddd; }
+  [data-theme="dark"] .agent-input-row { background: #1e1e2e; border-color: #333; }
+  [data-theme="dark"] #agent-input    { background: #2a2a3e; border-color: #444; color: #ddd; }
+  [data-theme="dark"] .suggestion-btn { border-color: #444; color: #ccc; }
+  [data-theme="dark"] .suggestion-btn:hover { background: #2a2a3e; }
+  [data-theme="dark"] .dataset-chip   { background: #1e3a5f; color: #90c4ff; }
+  [data-theme="dark"] .agent-header,
+  [data-theme="dark"] .status-badge.loading { color: #ccc; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="agent-container">
+
+  <!-- ── Sidebar ──────────────────────────────────────────────────────── -->
+  <aside class="agent-sidebar">
+
+    <div>
+      <p class="sidebar-title">Data API status</p>
+      <span id="api-status" class="status-badge loading">
+        <span class="dot"></span> Checking…
+      </span>
+    </div>
+
+    <div>
+      <p class="sidebar-title">Loaded datasets</p>
+      <div id="dataset-chips"><em style="font-size:12px;color:#999">Loading…</em></div>
+    </div>
+
+    <div>
+      <p class="sidebar-title">Try asking</p>
+      <button class="suggestion-btn"
+        onclick="sendMsg('Which city had the most accidents at T-junctions in 2019?')">
+        Top T-junction city (2019)
+      </button>
+      <button class="suggestion-btn"
+        onclick="sendMsg('Compare drunk driving accidents in 2019 vs 2020')">
+        Drunk driving 2019 → 2020
+      </button>
+      <button class="suggestion-btn"
+        onclick="sendMsg('Which weather condition caused the most accidents in 2020?')">
+        Worst weather condition 2020
+      </button>
+      <button class="suggestion-btn"
+        onclick="sendMsg('Top 5 cities for two-wheeler accidents in 2020')">
+        Top two-wheeler cities
+      </button>
+      <button class="suggestion-btn"
+        onclick="sendMsg('Show road defect accident trends in Maharashtra from 2010 to 2016')">
+        Maharashtra road defects trend
+      </button>
+    </div>
+
+    <!-- Back link -->
+    <div style="margin-top:auto">
+      <a href="/" style="font-size:13px;color:#1a73e8;text-decoration:none;">
+        ← Back to OCR Chat
+      </a>
+    </div>
+
+  </aside>
+
+  <!-- ── Chat main ────────────────────────────────────────────────────── -->
+  <div class="agent-main">
+
+    <div class="agent-header">
+      <h2>🚦 Accident Data Agent</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:13px;color:#888">Powered by Sarvam · Data API</span>
+      </div>
+    </div>
+
+    <div id="agent-messages">
+      <div class="msg assistant">
+Hi! I'm your India road accident data analyst.
+
+I can answer questions about accidents in Million Plus cities — by road features, junction types, traffic control, weather, violations, and vehicle types (2019–2021), as well as state-level road defect trends (2006–2016).
+
+I fetch live data from the API for every question, so answers are always based on the actual dataset.
+
+Use the suggestions on the left or type your own question below ↓
+      </div>
+    </div>
+
+    <div class="agent-input-row">
+      <textarea
+        id="agent-input"
+        placeholder="Ask about accident data…"
+        onkeydown="handleKey(event)"
+        oninput="autoResize(this)">
+      </textarea>
+      <button id="agent-reset-btn" onclick="resetChat()" title="Reset conversation">
+        <i class="fas fa-redo-alt"></i>
+      </button>
+      <button id="agent-send-btn" onclick="sendInput()" disabled>
+        <i class="fas fa-paper-plane"></i> Send
+      </button>
+    </div>
+
+  </div><!-- .agent-main -->
+</div><!-- .agent-container -->
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ── Status + datasets ────────────────────────────────────────────────────────
+async function loadStatus() {
+  const badge = document.getElementById('api-status');
+  const chips = document.getElementById('dataset-chips');
+  try {
+    const r = await fetch('/agent/status');
+    const d = await r.json();
+    if (d.data_api === 'ok') {
+      badge.className = 'status-badge ok';
+      badge.innerHTML = '<span class="dot"></span> Connected';
+    } else {
+      throw new Error('unreachable');
+    }
+  } catch {
+    badge.className = 'status-badge error';
+    badge.innerHTML = '<span class="dot"></span> API offline';
+    chips.innerHTML = '<span style="font-size:12px;color:#c00">Start the Data API on port 8001</span>';
+    return;
+  }
+  try {
+    const r = await fetch('/agent/datasets');
+    const datasets = await r.json();
+    if (Array.isArray(datasets) && datasets.length) {
+      chips.innerHTML = datasets
+        .map(d => `<span class="dataset-chip">${d.key}</span>`)
+        .join('');
+    } else {
+      chips.innerHTML = '<span style="font-size:12px;color:#999">No datasets loaded</span>';
+    }
+  } catch {
+    chips.innerHTML = '<span style="font-size:12px;color:#999">Could not load datasets</span>';
+  }
+}
+loadStatus();
+
+// ── Send helpers ─────────────────────────────────────────────────────────────
+function addMsg(text, role) {
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.textContent = text;
+  document.getElementById('agent-messages').appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth' });
+  return div;
+}
+
+async function sendMsg(text) {
+  if (!text.trim()) return;
+  addMsg(text, 'user');
+  const thinking = addMsg('Analysing data…', 'thinking');
+  const btn = document.getElementById('agent-send-btn');
+  btn.disabled = true;
+
+  try {
+    const r = await fetch('/agent/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text }),
+    });
+    const data = await r.json();
+    thinking.remove();
+    if (data.success) {
+      addMsg(data.response, 'assistant');
+    } else {
+      addMsg('Error: ' + (data.error || 'Unknown error'), 'thinking');
+    }
+  } catch (e) {
+    thinking.textContent = 'Network error: ' + e.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function sendInput() {
+  const inp = document.getElementById('agent-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  inp.style.height = '44px';
+  document.getElementById('agent-send-btn').disabled = true;
+  sendMsg(text);
+}
+
+function handleKey(e) {
+  const inp = document.getElementById('agent-input');
+  document.getElementById('agent-send-btn').disabled = !inp.value.trim();
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendInput();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  document.getElementById('agent-send-btn').disabled = !el.value.trim();
+}
+
+async function resetChat() {
+  await fetch('/agent/reset', { method: 'POST' });
+  const box = document.getElementById('agent-messages');
+  box.innerHTML = '';
+  addMsg('Conversation reset. Ask me anything about the accident data.', 'assistant');
+}
+</script>
+{% endblock %}
